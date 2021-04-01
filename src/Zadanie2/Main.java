@@ -14,15 +14,15 @@ public class Main {
         String weatherJson = s.getWeather("Warsaw");
         Double rate1 = s.getRateFor("USD");
         Double rate2 = s.getNBPRate();
-        System.out.println(rate1);
         // ...
         // część uruchamiająca GUI
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Frame(s.getKraj(), weatherJson, s.getCurrency());
+                new Frame(s.getKraj(), weatherJson, s.getCurrency(), rate2);
             }
         });
+
 
 
     }

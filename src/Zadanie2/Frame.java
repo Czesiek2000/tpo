@@ -6,25 +6,18 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
+import org.json.*;
 import javax.swing.*;
 import java.awt.*;
 
 public class Frame extends JFrame {
-    String kraj;
-    String gwaluta;
+    String kraj, gwaluta, json;
     JPanel jPanel;
     JFXPanel jfxPanel;
     WebEngine webEngine;
-    String json;
-    JLabel jLabel;
-    JLabel jl;
+    JLabel jLabel, jl, jLabel1;
 
-    public Frame(String kraj, String json, String gwaluta) {
+    public Frame(String kraj, String json, String gwaluta, double rateNbp) {
         this.kraj = kraj;
         this.json = json;
         this.gwaluta = gwaluta;
@@ -40,17 +33,23 @@ public class Frame extends JFrame {
         this.setLayout(new BorderLayout());
         jfxPanel = new JFXPanel();
         jfxPanel.setLocation(new Point(750,500));
+        jfxPanel.setSize(new Dimension(1500, 1000));
         this.createLayout();
-        this.parseJson();
         jLabel = new JLabel();
-        jLabel.setText(this.parseJson());
+        jLabel.setText(this.parseJson(json));
         jl = new JLabel();
         jl.setText("Currency " + new Service(this.kraj).getRateFor(this.gwaluta));
-        jPanel.add(jl);
+        jLabel1 = new JLabel();
+        jLabel1.setText("Nbp rate: " + rateNbp);
+
+        jPanel.add(jLabel1);
         jPanel.add(jLabel);
+        jPanel.add(jl);
+
         this.add(jPanel, "North");
         this.add(jfxPanel, "Center");
         this.pack();
+
         Platform.runLater(() -> this.createBrowser(jfxPanel, this.kraj));
     }
 
@@ -74,13 +73,16 @@ public class Frame extends JFrame {
     }
 
     public void showdialog() {
+        JTextField kraj = new JTextField();
         JTextField miasto = new JTextField();
         JTextField waluta = new JTextField();
         JTextArea text = new JTextArea();
         text.setVisible(false);
+        text.setEditable(false);
 
         Object[] message = {
-                "Kraj:", miasto,
+                "Kraj:", kraj,
+                "Miasto:", miasto,
                 "Waluta:", waluta,
                 text
         };
@@ -97,45 +99,43 @@ public class Frame extends JFrame {
 
         }
 
-        this.kraj = miasto.getText();
+        this.kraj = kraj.getText();
         this.gwaluta = waluta.getText();
-        this.jLabel.setText(this.parseJson());
+//        this.jLabel.setText(this.parseJson());
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 webEngine.reload();
-                createBrowser(jfxPanel, kraj);
+                createBrowser(jfxPanel, miasto.getText());
             }
         });
+        Service s = new Service(this.kraj);
+        this.jl.setText("Currency: " + s.getRateFor(waluta.getText()));
+        this.jLabel.setText(this.parseJson(s.getWeather(miasto.getText())));
+        this.jLabel1.setText("Nbp rate: " + s.getNBPRate());
         this.repaint();
-        this.jLabel.setText(this.parseJson());
-        this.jl.setText(String.valueOf(new Service(this.kraj).getRateFor(this.gwaluta)));
-        System.out.println(new Service(this.kraj).getRateFor(this.gwaluta));
-        System.out.println(this.kraj + " " + this.gwaluta);
     }
 
-    public String parseJson(){
+    public String parseJson(String json){
 
-        JSONParser parser = new JSONParser();
-        Object obj = null; //the location of the file
+        Object obj = null;
         try {
-            obj = parser.parse(new Service(this.kraj).getWeather(this.kraj));
-        } catch (ParseException e) {
+            obj = new JSONObject(json);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         JSONObject jsonObject = (JSONObject) obj;
-        System.out.println(jsonObject.get("name"));
         JSONArray object = (JSONArray) jsonObject.get("weather");
         JSONObject wind = (JSONObject) jsonObject.get("wind");
         Double speed = (Double) wind.get("speed");
         JSONObject temp = (JSONObject) jsonObject.get("main");
         String name = (String) jsonObject.get("name");
         Double temperature = (Double) temp.get("temp");
-        Long pressure = (Long) temp.get("pressure");
+        int pressure = (int) temp.get("pressure");
         JSONObject weather = (JSONObject) object.get(0);
         String description = (String) weather.get("description");
         String s = (String) weather.get("main");
-        String result = "Country: " + this.kraj + " wind speed: " + speed + " temperature: " + temperature + " pressure: " + pressure + " description: " + description;
+        String result = "Country: " + this.kraj + " city: " + " wind speed: " + speed + " temperature: " + temperature + " pressure: " + pressure + " description: " + description;
 
         return result;
     }
