@@ -152,4 +152,8 @@ public class Service {
         return this.currency;
     }
 
+    public String getCity(){
+        return this.city;
+    }
+
 }

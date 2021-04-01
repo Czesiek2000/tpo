@@ -8,23 +8,27 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.json.*;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class Frame extends JFrame {
-    String kraj, gwaluta, json;
-    JPanel jPanel;
+    String kraj, gwaluta, json, miasto;
+    JPanel jPanel, jPanel2, jPanel3, jPanel4, mainPanel;
     JFXPanel jfxPanel;
     WebEngine webEngine;
-    JLabel jLabel, jl, jLabel1;
+    JLabel jl, jLabel1;
+    JTextArea jLabel;
 
-    public Frame(String kraj, String json, String gwaluta, double rateNbp) {
+    public Frame(String kraj, String json, String gwaluta, double rateNbp, String miasto) {
         this.kraj = kraj;
         this.json = json;
         this.gwaluta = gwaluta;
+        this.miasto = miasto;
 
         setTitle("TPO2 GUI");
-        setSize(new Dimension(1500, 1200));
-        this.setMinimumSize(new Dimension(1500, 1000));
+        setSize(new Dimension(800, 600));
+        this.setMinimumSize(new Dimension(800, 600));
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(true);
         setLocationRelativeTo(null);
@@ -32,21 +36,26 @@ public class Frame extends JFrame {
 
         this.setLayout(new BorderLayout());
         jfxPanel = new JFXPanel();
-        jfxPanel.setLocation(new Point(750,500));
-        jfxPanel.setSize(new Dimension(1500, 1000));
-        this.createLayout();
-        jLabel = new JLabel();
+//        jfxPanel.setLocation(new Point(750,500));
+        jfxPanel.setPreferredSize(new Dimension(800, 600));
+        jLabel = new JTextArea();
+        jLabel.setBackground(Color.WHITE);
+        jLabel.setForeground(Color.BLACK);
+        jLabel.setOpaque(false);
+        jLabel.setEditable(false);
+        jLabel.setFont(new Font("Arial", Font.BOLD, 14));
+//        jLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
         jLabel.setText(this.parseJson(json));
+        jLabel.setBounds(0, 30, 90, 100);
         jl = new JLabel();
-        jl.setText("Currency " + new Service(this.kraj).getRateFor(this.gwaluta));
+        jl.setText("Currency: \n" + new Service(this.kraj).getRateFor(this.gwaluta));
         jLabel1 = new JLabel();
-        jLabel1.setText("Nbp rate: " + rateNbp);
+        jLabel1.setText("Nbp rate: \n" + rateNbp);
 
-        jPanel.add(jLabel1);
-        jPanel.add(jLabel);
-        jPanel.add(jl);
+        this.createLayout();
 
-        this.add(jPanel, "North");
+        this.add(mainPanel, "North");
         this.add(jfxPanel, "Center");
         this.pack();
 
@@ -57,8 +66,10 @@ public class Frame extends JFrame {
 
         Group group = new Group();
         Scene scene = new Scene(group);
+        group.autosize();
         jfxPanel.setScene(scene);
         WebView webView = new WebView();
+        webView.setPrefSize(jfxPanel.getWidth()/ 1.0, jfxPanel.getHeight() / 1.0);
         group.getChildren().add(webView);
         webEngine = webView.getEngine();
         webEngine.load("https://en.wikipedia.org/wiki/" + city);
@@ -67,9 +78,25 @@ public class Frame extends JFrame {
 
     public void createLayout(){
         jPanel = new JPanel();
+        jPanel2 = new JPanel();
+        jPanel3 = new JPanel();
+        jPanel4 = new JPanel();
+        mainPanel = new JPanel();
+        jPanel.setPreferredSize(new Dimension(150, 200));
+        jPanel.setBorder(BorderFactory.createTitledBorder("Nbp rate"));
+        jPanel2.setBorder(BorderFactory.createTitledBorder("Weather"));
+        jPanel2.setPreferredSize(new Dimension(250, 200));
+        jPanel3.setBorder(BorderFactory.createTitledBorder("Currency"));
+        jPanel3.setPreferredSize(new Dimension(200, 200));
+        jPanel4.setPreferredSize(new Dimension(200, 200));
         JButton button = new JButton("Zmien miasto");
+        button.setPreferredSize(new Dimension(200, 100));
         button.addActionListener(actionEvent -> this.showdialog() );
-        jPanel.add(button);
+        jPanel.add(jLabel1);
+        jPanel2.add(jLabel);
+        jPanel3.add(jl);
+        jPanel4.add(button);
+        mainPanel.add(jPanel);mainPanel.add(jPanel2);mainPanel.add(jPanel3);mainPanel.add(jPanel4);
     }
 
     public void showdialog() {
@@ -100,6 +127,7 @@ public class Frame extends JFrame {
         }
 
         this.kraj = kraj.getText();
+        this.miasto = miasto.getText();
         this.gwaluta = waluta.getText();
 //        this.jLabel.setText(this.parseJson());
         Platform.runLater(new Runnable() {
@@ -135,7 +163,7 @@ public class Frame extends JFrame {
         JSONObject weather = (JSONObject) object.get(0);
         String description = (String) weather.get("description");
         String s = (String) weather.get("main");
-        String result = "Country: " + this.kraj + " city: " + " wind speed: " + speed + " temperature: " + temperature + " pressure: " + pressure + " description: " + description;
+        String result = "Country: " + this.kraj + "\nCity: " + this.miasto +"\nWind speed: " + speed + "\nTemperature: " + temperature + "\nPressure: " + pressure + "\nDescription: " + description;
 
         return result;
     }
