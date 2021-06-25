@@ -1,0 +1,9 @@
+Zuk,1980,151,dostawczy
+Nysa,1958,161,dostawczy
+Syrena,1974,101,osobowy
+Fiat 126p,1978,51,osobowy
+Skoda,2000,150,osobowy
+Volkswagen,2001,145,osobowy
+Trabant,1902,40,osobowy
+Mercedes,1999,250,F1
+McLaren,1998,251,F1
