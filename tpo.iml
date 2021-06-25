@@ -7,5 +7,19 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="json" level="project" />
+    <orderEntry type="library" name="java" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/gson-2.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" exported="" name="lib" level="project" />
+    <orderEntry type="library" name="javax.jms-api-2.0.1" level="project" />
+    <orderEntry type="library" name="openjms-0.7.7-beta-1" level="project" />
   </component>
 </module>

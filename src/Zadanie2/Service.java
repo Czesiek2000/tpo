@@ -19,7 +19,7 @@ public class Service {
     JSONObject nbpRate;
 
     public Service(String kraj) {
-        this.kraj = (kraj);
+        this.kraj = kraj;
         getIso();
     }
 
